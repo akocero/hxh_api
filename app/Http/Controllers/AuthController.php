@@ -33,8 +33,7 @@ class AuthController extends Controller
                 throw new \Exception("Error in Login");
             }
 
-            $tokenResult = $user->createToken("authToken", ['post:list', 'post:show'])->plainTextToken;
-
+            $tokenResult = $user->createToken("authToken", ["post:list"])->plainTextToken;
             return response()->json([
                 "status_code" => 200,
                 "access_token" => $tokenResult,
