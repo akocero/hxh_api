@@ -12,6 +12,8 @@ class PostResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
+
+    //  you can use this also even it is not a api  use this to select specific column
     public function toArray($request)
     {
         return [

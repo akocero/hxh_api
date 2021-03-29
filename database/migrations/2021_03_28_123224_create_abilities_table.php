@@ -24,21 +24,27 @@ class CreateAbilitiesTable extends Migration
 
 
         Ability::create([
-            "name" => "post:list",
+            "name" => "post:read",
             "table_name" => "posts",
-            "details" => "get all posts"
+            "details" => "read all or single post"
         ]);
 
         Ability::create([
-            "name" => "post:show",
+            "name" => "post:create",
             "table_name" => "posts",
-            "details" => "get all posts"
+            "details" => "create post"
         ]);
 
         Ability::create([
-            "name" => "post:store",
+            "name" => "post:update",
             "table_name" => "posts",
-            "details" => "get all posts"
+            "details" => "update post"
+        ]);
+
+        Ability::create([
+            "name" => "post:delete",
+            "table_name" => "posts",
+            "details" => "delete post"
         ]);
     }
 
