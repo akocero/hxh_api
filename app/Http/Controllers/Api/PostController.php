@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -23,7 +24,7 @@ class PostController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        return Post::all();
+        return PostResource::collection(Post::paginate(10));
     }
 
     /**
@@ -54,7 +55,7 @@ class PostController extends Controller
 
         try {
 
-            $post = Post::findOrFail($id);
+            $post = new PostResource(Post::findOrFail($id));
         } catch (\Throwable $th) {
 
             return response([
