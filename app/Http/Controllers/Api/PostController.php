@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Models\User;
+use Facade\Ignition\QueryRecorder\Query;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,14 +18,16 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
 
-        if (!auth()->user()->tokenCan('post:list')) {
+        if (!auth()->user()->tokenCan('post:read')) {
             abort(403, 'Unauthorized');
         }
 
-        return PostResource::collection(Post::paginate(10));
+        return PostResource::collection(Post::paginate($request->paginate ?  $request->paginate : 10));
+
+        // return $request->all();
     }
 
     /**
@@ -35,6 +38,9 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        if (!auth()->user()->tokenCan('post:create')) {
+            abort(403, 'Unauthorized');
+        }
 
         $post = Post::create($this->validatedData($request));
         return $post;
@@ -49,20 +55,11 @@ class PostController extends Controller
     public function show($id)
     {
 
-        if (!auth()->user()->tokenCan('post:show')) {
+        if (!auth()->user()->tokenCan('post:read')) {
             abort(403, 'Unauthorized');
         }
 
-        try {
-
-            $post = new PostResource(Post::findOrFail($id));
-        } catch (\Throwable $th) {
-
-            return response([
-                'message' => 'id not found',
-            ], 404);
-        }
-
+        $post = new PostResource(Post::findOrFail($id));
         return $post;
     }
 
@@ -75,7 +72,13 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if (!auth()->user()->tokenCan('post:update')) {
+            abort(403, 'Unauthorized');
+        }
+
+        $post = Post::findOrFail($id);
+        $post->update($this->validatedData($request));
+        return $post;
     }
 
     /**
@@ -86,18 +89,13 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-
-        try {
-
-            $post = Post::findOrFail($id);
-            $post->delete($post);
-            return ['message' => 'deleted'];
-        } catch (\Throwable $th) {
-
-            return response([
-                'message' => 'id not found',
-            ], 404);
+        if (!auth()->user()->tokenCan('post:delete')) {
+            abort(403, 'Unauthorized');
         }
+
+        $post = Post::findOrFail($id);
+        $post->delete($post);
+        return [];
     }
 
     protected function validatedData($request)
