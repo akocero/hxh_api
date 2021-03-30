@@ -49,10 +49,15 @@ class TokenController extends Controller
     public function store(Request $request)
     {
         // dd($request->all());
-        $user = auth()->user();
-        $tokenResult = $user->createToken($request->token_name, request()->abilities)->plainTextToken;
 
-        return redirect('token/' . $tokenResult);
+        if(is_null($request->abilities) || is_null($request->token_name)){
+            return back()->with('error', "Please check your inputs");
+        }
+
+        $user = auth()->user();
+        $personal_token = $user->createToken($request->token_name, $request->abilities)->plainTextToken;
+
+        return back()->with("personal_token", $personal_token);
     }
 
     /**
@@ -105,5 +110,12 @@ class TokenController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    protected function validatedData() {
+
+
+
+        return $data;
     }
 }
