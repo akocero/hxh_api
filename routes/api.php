@@ -23,9 +23,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post("/login", [AuthController::class, "login"]);
 
 
-// protect the route using sanctum 
+// protect the route using sanctum
 Route::middleware(["auth:sanctum"])->group(
     function () {
-        Route::apiResource('posts', PostController::class);
+        Route::apiResource('posts', PostController::class)->except('destroy');
     }
 );
